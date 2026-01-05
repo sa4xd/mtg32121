@@ -1,4 +1,6 @@
 # mtg
+  tg://proxy?server=ip&port=prot&secret=7jZ6GJruGPoxwZAFTv1KjpVzdG9yYWdlLmdvb2dsZWFwaXMuY29t
+  prot : 3128
 
 Highly-opinionated (ex-bullshit-free) MTPROTO proxy for
 [Telegram](https://telegram.org/).
