@@ -4,7 +4,7 @@
 # 默认环境变量（可被外部覆盖）
 # ================================
 SECRET=${SECRET:-"7mGTeoIU5qRH_arNqG_Q405henVyZS5taWNyb3NvZnQuY29t"}
-PORT=${PORT:-443}
+PORT=${PORT:-6443}
 DOH_IP=${DOH_IP:-"8.8.8.8"}
 
 # ================================
