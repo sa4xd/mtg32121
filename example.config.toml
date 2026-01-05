@@ -85,7 +85,7 @@ allow-fallback-on-unknown-dc = false
 # it has to access.
 #
 # By default we use Quad9.
-doh-ip = "9.9.9.9"
+doh-ip = "8.8.8.8"
 
 # mtg can work via proxies (for now, we support only socks5). Proxy
 # configuration is done via list. So, you can specify many proxies
