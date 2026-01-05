@@ -22,7 +22,10 @@ RUN set -x \
 # PACKAGE STAGE
 
 FROM scratch
+
 COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["run", "/config.toml"]
 
