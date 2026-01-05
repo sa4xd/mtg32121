@@ -32,7 +32,7 @@ allow-fallback-on-unknown-dc = false
 ###############################################################################
 [network]
 # DNS-over-HTTPS 服务器
-doh-ip = "${DOH_IP}"
+doh-ip = "8.8.8.8"
 
 # 代理链（一般不需要）
 proxies = [
