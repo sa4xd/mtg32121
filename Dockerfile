@@ -1,5 +1,6 @@
 ###############################################################################
 # BUILD STAGE
+###############################################################################
 
 FROM golang:1.19-alpine AS build
 
@@ -17,14 +18,19 @@ WORKDIR /app
 RUN set -x \
   && make -j 4 static
 
+# 关键：在 build 阶段复制 entrypoint.sh 并赋予执行权限
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 
 ###############################################################################
 # PACKAGE STAGE
+###############################################################################
 
 FROM scratch
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# 直接复制已经有执行权限的 entrypoint.sh
+COPY --from=build /entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["run", "/config.toml"]
