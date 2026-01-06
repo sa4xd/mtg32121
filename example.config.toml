@@ -18,7 +18,7 @@ debug = true
 # A secret. Please remember that mtg supports only FakeTLS mode, legacy
 # simple and secured mode are prohibited. For you it means that secret
 # should either be base64-encoded or starts with ee.
-secret = "ee367a189aee18fa31c190054efd4a8e9573746f726167652e676f6f676c65617069732e636f6d"
+secret = "ee2a655d68be302a8df46d2b4c68eae6d762696e672e636f6d"
 
 # Host:port pair to run proxy on.
 bind-to = "0.0.0.0:3128"
@@ -85,7 +85,7 @@ allow-fallback-on-unknown-dc = false
 # it has to access.
 #
 # By default we use Quad9.
-doh-ip = "8.8.8.8"
+doh-ip = "1.1.1.1"
 
 # mtg can work via proxies (for now, we support only socks5). Proxy
 # configuration is done via list. So, you can specify many proxies
