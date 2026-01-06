@@ -29,7 +29,7 @@ COPY --from=build /app/mtg /mtg
 COPY --from=build /app/example.config.toml /config.toml
 
 # 创建简单的静态HTML页面
-RUN echo '<html><body><h1>MTG Proxy Server</h1><p>Static Blog Page</p></body></html>' > /index.html
+RUN echo '<html><body><h1>Blog</h1><p>Blog Page</p></body></html>' > /index.html
 
 # 创建启动脚本
 RUN echo '#!/bin/sh' > /start.sh && \
