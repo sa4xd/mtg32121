@@ -3,14 +3,16 @@
 ###############################################################################
 FROM golang:1.19-bullseye AS build
 
-
 RUN set -x \
-  && apk --no-cache --update add \
-    bash \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     git \
-    make
+    make \
+    openssl jq python3 golang \
+    bash
+
 
 COPY . /app
 WORKDIR /app
