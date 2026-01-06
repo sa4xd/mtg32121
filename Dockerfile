@@ -1,69 +1,58 @@
 ###############################################################################
-# BUILD STAGE (Debian, because cftun requires glibc + Go >= 1.20)
-###############################################################################
-FROM golang:1.20-bullseye AS build
+# BUILD STAGE
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    git \
-    make \
+FROM golang:1.19-alpine AS build
+
+RUN set -x \
+  && apk --no-cache --update add \
     bash \
-    curl
+    ca-certificates \
+    curl \
+    git \
+    make
 
-# -------------------------
-# 构建 mtg（你的原逻辑）
-# -------------------------
 COPY . /app
 WORKDIR /app
-RUN make -j 4 static
 
-# -------------------------
-# 构建 cftun（修复 go.mod 缺失）
-# -------------------------
-RUN git clone https://github.com/fmnx/cftun.git /app/cftun-src
-
-WORKDIR /app/cftun-src
-
-# cftun 仓库缺少 go.mod → 自动生成
-RUN go mod init cftun && \
-    go mod tidy
-
-# 构建 cftun
-RUN go build -o /usr/local/bin/cftun .
-
+RUN set -x \
+  && make -j 4 static
 
 ###############################################################################
-# PACKAGE STAGE (Alpine runtime)
-###############################################################################
+# PACKAGE STAGE
+
 FROM alpine:latest
 
-RUN apk --no-cache add busybox-extras
+RUN apk --no-cache add busybox-extras wget
 
-COPY --from=build /usr/local/bin/cftun /usr/local/bin/cftun
+# -------------------------
+# 安装 cloudflared（官方二进制）
+# -------------------------
+RUN wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+    -O /usr/local/bin/cloudflared && \
+    chmod +x /usr/local/bin/cloudflared
+
+COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build /app/mtg /mtg
 COPY --from=build /app/example.config.toml /config.toml
-COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
+# 创建简单的静态HTML页面
+RUN echo '<html><body><h1>Blog</h1><p>Blog Page</p></body></html>' > /index.html
 
 # -------------------------
 # 环境变量（可 docker run 覆盖）
 # -------------------------
-ENV CFTUN_PORT=3128 \
-    CFTUN_PROTOCOL=tcp \
-    CFTUN_HOSTNAME="" \
-    CFTUN_TOKEN=""
+ENV CFTUN_HOSTNAME="" 
+    
+ENV CFTUN_TOKEN=""
 
 # -------------------------
-# 静态博客
-# -------------------------
-RUN echo '<html><body><h1>Blog</h1><p>Blog Page</p></body></html>' > /index.html
-
-# -------------------------
-# 启动脚本：httpd + cftun + mtg
+# 创建启动脚本
 # -------------------------
 RUN echo '#!/bin/sh' > /start.sh && \
     echo 'httpd -p 3000 -h / &' >> /start.sh && \
-    echo 'printf "tunnels:\n  - hostname: %s\n    service: tcp://127.0.0.1:%s\n    protocol: %s\n" "$CFTUN_HOSTNAME" "$CFTUN_PORT" "$CFTUN_PROTOCOL" > /cftun.yaml' >> /start.sh && \
-    echo 'cftun --config /cftun.yaml --token "$CFTUN_TOKEN" &' >> /start.sh && \
+    echo 'echo "启动 cloudflared TCP 隧道..."' >> /start.sh && \
+    echo 'cloudflared tunnel --url tcp://127.0.0.1:3128 --hostname "$CFTUN_HOSTNAME" --token "$CFTUN_TOKEN" &' >> /start.sh && \
+    echo 'echo "启动 mtg..."' >> /start.sh && \
     echo '/mtg run /config.toml' >> /start.sh && \
     chmod +x /start.sh
 
