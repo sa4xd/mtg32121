@@ -18,7 +18,7 @@ debug = true
 # A secret. Please remember that mtg supports only FakeTLS mode, legacy
 # simple and secured mode are prohibited. For you it means that secret
 # should either be base64-encoded or starts with ee.
-secret = "ee2a655d68be302a8df46d2b4c68eae6d762696e672e636f6d"
+secret = "ee8a38010eef520db917114ed5fbb9b2bb7777772e636c6f7564666c6172652e636f6d"
 
 # Host:port pair to run proxy on.
 bind-to = "0.0.0.0:3128"
