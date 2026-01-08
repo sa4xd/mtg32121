@@ -51,7 +51,7 @@ ENV CFTUN_TOKEN=""
 RUN echo '#!/bin/sh' > /start.sh && \
     echo 'httpd -p 3000 -h / &' >> /start.sh && \
     echo 'echo "启动 cloudflared TCP 隧道..."' >> /start.sh && \
-    echo 'cloudflared tunnel --url tcp://127.0.0.1:3128 --hostname "$CFTUN_HOSTNAME" --token "$CFTUN_TOKEN" &' >> /start.sh && \
+    echo 'cloudflared tunnel run --token "$CFTUN_TOKEN" &' >> /start.sh && \
     echo 'echo "启动 mtg..."' >> /start.sh && \
     echo '/mtg run /config.toml' >> /start.sh && \
     chmod +x /start.sh
